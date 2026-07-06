@@ -1934,8 +1934,8 @@ body {
     }
 
     .tab-btn {
-        padding: 9px 16px;
-        font-size: 12.5px;
+        padding: 9px 12px;
+        font-size: 13px;
     }
 
     .tab-btn span {
@@ -1954,12 +1954,9 @@ body {
         font-size: 24px;
     }
 
-    .content-card {
-        padding: 24px 20px;
-    }
-
+    .content-card,
     .quiz-question-card {
-        padding: 24px 20px;
+        padding: 20px 16px;
     }
 
     .methods-grid {
@@ -1968,13 +1965,105 @@ body {
 
     .game-mode-selector {
         width: 100%;
+        flex-direction: column;
     }
 
     .game-mode-btn {
-        flex: 1;
+        width: 100%;
         justify-content: center;
-        padding: 10px 16px;
-        font-size: 13px;
+        padding: 12px;
+    }
+    
+    /* Nuevas reglas móviles para mayor fluidez */
+    .formula-box {
+        padding: 16px;
+        font-size: 18px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .formula-explain-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 16px;
+    }
+    
+    .symbol-badge {
+        width: 100%;
+        max-width: 150px;
+    }
+    
+    .diagrama-svg-container {
+        padding: 12px;
+    }
+    
+    .leyenda-item {
+        width: 100%;
+        justify-content: center;
+        text-align: left;
+    }
+    
+    .paso-card {
+        padding: 16px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .paso-numero {
+        margin: 0 auto;
+    }
+    
+    /* Arreglo específico para los pasos con fórmulas largas (Screenshot del usuario) */
+    .step-item {
+        padding: 14px 12px;
+        min-width: 0; /* Permite que el flex-item se encoja */
+    }
+    
+    .step-item > div {
+        min-width: 0; /* Crítico para que funcione el overflow-x dentro de flex */
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px; /* Espacio para la barra de scroll */
+    }
+    
+    /* Ajustes para el Simulador para que no se vea raro */
+    .controls-panel {
+        padding: 20px 16px;
+    }
+    
+    .chart-area {
+        padding: 12px 8px;
+    }
+    
+    #grafico, #graficoDesafio {
+        min-height: 320px !important;
+        height: 60vh !important;
+        max-height: 400px !important;
+    }
+    
+    .quote-block {
+        padding: 20px 16px;
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        gap: 12px;
     }
 
+    
+    .quote-icon {
+        margin: 0;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+    
+    .slider-container {
+        padding: 0 10px;
+    }
 }

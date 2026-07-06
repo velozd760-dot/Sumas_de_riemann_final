@@ -259,15 +259,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 showlegend: true
             };
 
+            const isMobile = window.innerWidth <= 600;
             const layout = {
                 title: {
-                    text: '<b>Área bajo la curva — Sumas de Riemann</b>',
-                    font: { family: 'Plus Jakarta Sans, sans-serif', size: 17, color: '#111827' },
+                    text: isMobile ? '<b>Sumas de Riemann</b>' : '<b>Área bajo la curva - Sumas de Riemann</b>',
+                    font: { family: 'Plus Jakarta Sans, sans-serif', size: isMobile ? 14 : 17, color: '#111827' },
                     y: 0.96
                 },
                 autosize: true,
                 xaxis: {
-                    title: { text: 'x', font: { family: 'Plus Jakarta Sans', size: 14 } },
+                    title: { text: 'x', font: { family: 'Plus Jakarta Sans', size: isMobile ? 12 : 14 } },
                     range: [plotA, plotB],
                     zeroline: true,
                     zerolinecolor: '#d1d5db',
@@ -275,15 +276,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     linecolor: '#e5e7eb'
                 },
                 yaxis: {
-                    title: { text: 'f(x)', font: { family: 'Plus Jakarta Sans', size: 14 } },
+                    title: { text: 'f(x)', font: { family: 'Plus Jakarta Sans', size: isMobile ? 12 : 14 } },
                     zeroline: true,
                     zerolinecolor: '#d1d5db',
                     gridcolor: '#f3f4f6',
                     linecolor: '#e5e7eb'
                 },
-                margin: { l: 55, r: 25, b: 50, t: 55 },
+                margin: isMobile ? { l: 40, r: 15, b: 40, t: 40 } : { l: 55, r: 25, b: 50, t: 55 },
                 showlegend: true,
-                legend: { x: 0.02, y: 0.98, font: { family: 'Plus Jakarta Sans', size: 12 } },
+                legend: isMobile 
+                    ? { orientation: 'h', x: 0, y: -0.15, font: { family: 'Plus Jakarta Sans', size: 10 } }
+                    : { x: 0.02, y: 0.98, font: { family: 'Plus Jakarta Sans', size: 12 } },
                 plot_bgcolor: '#ffffff',
                 paper_bgcolor: '#ffffff',
                 dragmode: 'pan'
