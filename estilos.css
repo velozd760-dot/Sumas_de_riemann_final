@@ -850,6 +850,9 @@ body {
 /* Estilos para el editor MathLive (Simulador Libre) */
 math-field {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
     background: white;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
