@@ -12,14 +12,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Estilos -->
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="estilos.css?v=2.0">
 
     <!-- Librerías Externas -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+    <script defer src="https://unpkg.com/mathlive"></script>
     <!-- Favicon -->
     <link rel="icon" type="image/jpg" href="logo.jpg">
 </head>
@@ -367,7 +368,21 @@
 
                 <!-- Panel de controles -->
                 <aside class="controls-panel">
-                    <div class="panel-section">
+                    
+                    <!-- Selector de Modo de Simulador -->
+                    <div class="game-mode-selector" style="margin-bottom: 20px;">
+                        <button class="game-mode-btn active" id="btnSimuladorDidactico" onclick="cambiarModoSimulador('didactico')">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>Didáctico</span>
+                        </button>
+                        <button class="game-mode-btn" id="btnSimuladorLibre" onclick="cambiarModoSimulador('libre')">
+                            <i class="fa-solid fa-keyboard"></i>
+                            <span>Libre</span>
+                        </button>
+                    </div>
+
+                    <!-- Contenedor Didáctico: Lista de Casos -->
+                    <div class="panel-section" id="contenedorFuncionDidactica">
                         <label class="panel-label">
                             <i class="fa-solid fa-square-root-variable"></i> Caso de Estudio
                         </label>
@@ -381,6 +396,15 @@
                             <option value="gaussiana">Campana de Gauss: f(x) = e^(-x²)</option>
                             <option value="absoluto">Valor Absoluto: f(x) = |x|</option>
                         </select>
+                    </div>
+
+                    <!-- Contenedor Libre: Editor de Fórmulas -->
+                    <div class="panel-section" id="contenedorFuncionLibre" style="display: none;">
+                        <label class="panel-label">
+                            <i class="fa-solid fa-square-root-variable"></i> Función Libre f(x)
+                        </label>
+                        <math-field id="formulaInput" class="control-input" style="font-size: 16px; padding: 8px;">x^2+2</math-field>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Usa el teclado virtual o escribe (ej. sin(x), x^3).</p>
                     </div>
 
                     <div class="panel-section">
@@ -621,6 +645,6 @@
 
     </main>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2.0"></script>
 </body>
 </html>

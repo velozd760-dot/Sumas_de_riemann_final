@@ -177,27 +177,61 @@ document.addEventListener('DOMContentLoaded', () => {
         'absoluto':       { a: -3, b: 3 }
     };
 
+    let modoSimulador = 'didactico';
+
+    window.cambiarModoSimulador = function(modo) {
+        modoSimulador = modo;
+        document.getElementById('btnSimuladorDidactico').classList.toggle('active', modo === 'didactico');
+        document.getElementById('btnSimuladorLibre').classList.toggle('active', modo === 'libre');
+        
+        document.getElementById('contenedorFuncionDidactica').style.display = modo === 'didactico' ? 'block' : 'none';
+        const panelDidactico = document.getElementById('mensajeDidactico');
+        if (panelDidactico) panelDidactico.style.display = modo === 'didactico' ? 'block' : 'none';
+        document.getElementById('contenedorFuncionLibre').style.display = modo === 'libre' ? 'block' : 'none';
+        
+        actualizarGrafica();
+    };
+
     // --- Función principal de actualización ---
     actualizarGrafica = function () {
         try {
             if (!selFuncion || !inA || !inB || !inN || !selMetodo) return;
 
-            const claveFuncion = selFuncion.value || 'lineal';
-            const f = funcionesMath[claveFuncion] || funcionesMath['lineal'];
             const a = parseFloat(inA.value);
             const b = parseFloat(inB.value);
             const n = parseInt(inN.value);
             const claveMetodo = selMetodo.value || 'central';
-
+            
             if (isNaN(a) || isNaN(b) || a >= b || isNaN(n) || n < 1) return;
 
             if (txtNumRect) txtNumRect.textContent = n;
 
-            // Mensajes didácticos
-            if (panelDidactico) {
-                const msgF = mensajesLeccion[claveFuncion] || '';
-                const msgM = mensajesMetodo[claveMetodo] || '';
-                panelDidactico.innerHTML = `<p style="margin-bottom:6px;">${msgF}</p><p>${msgM}</p>`;
+            let f;
+            let nombreCurva = 'Función';
+            
+            if (modoSimulador === 'didactico') {
+                const claveFuncion = selFuncion.value || 'lineal';
+                f = funcionesMath[claveFuncion] || funcionesMath['lineal'];
+                nombreCurva = nombresFunciones[claveFuncion] || 'Función';
+                
+                // Mensajes didácticos
+                if (panelDidactico) {
+                    const msgF = mensajesLeccion[claveFuncion] || '';
+                    const msgM = mensajesMetodo[claveMetodo] || '';
+                    panelDidactico.innerHTML = `<p style="margin-bottom:6px;">${msgF}</p><p>${msgM}</p>`;
+                }
+            } else {
+                const formulaInput = document.getElementById('formulaInput');
+                // getValue('ascii-math') convierte el LaTeX de math-field a algo que math.js entiende fácil
+                const mathExpr = formulaInput ? formulaInput.getValue('ascii-math') : 'x^2+2';
+                try {
+                    const nodo = math.compile(mathExpr);
+                    f = (x) => nodo.evaluate({x: x});
+                    f(0); // Validar que la función no lance error inmediato
+                    nombreCurva = 'f(x) = ' + mathExpr;
+                } catch (e) {
+                    return; // Fórmula inválida o incompleta, simplemente no dibuja
+                }
             }
 
             const dx = (b - a) / n;
@@ -211,6 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 'central':   { fill: 'rgba(16,185,129,0.3)', line: 'rgba(16,185,129,0.6)' }
             };
             const color = coloresMetodo[claveMetodo] || coloresMetodo['central'];
+            
+            let diverge = false;
 
             for (let i = 0; i < n; i++) {
                 const xInicio = a + i * dx;
@@ -220,23 +256,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (claveMetodo === 'derecha') xEval = xFin;
                 else xEval = xInicio + dx / 2;
 
-                const altura = f(xEval);
+                let altura = f(xEval);
+                if (!isFinite(altura) || Math.abs(altura) > 1e6) {
+                    diverge = true;
+                    altura = 0; // Prevenir crash de Plotly pero marcamos como infinito
+                }
                 areaSuma += altura * dx;
 
-                datosRectangulos.push({
-                    x: [xInicio, xFin, xFin, xInicio, xInicio],
-                    y: [0, 0, altura, altura, 0],
-                    fill: 'toself',
-                    fillcolor: color.fill,
-                    line: { color: color.line, width: 1 },
-                    type: 'scatter',
-                    mode: 'lines',
-                    hoverinfo: 'skip',
-                    showlegend: false
-                });
+                if (!diverge) {
+                    datosRectangulos.push({
+                        x: [xInicio, xFin, xFin, xInicio, xInicio],
+                        y: [0, 0, altura, altura, 0],
+                        fill: 'toself',
+                        fillcolor: color.fill,
+                        line: { color: color.line, width: 1 },
+                        type: 'scatter',
+                        mode: 'lines',
+                        hoverinfo: 'skip',
+                        showlegend: false
+                    });
+                }
             }
 
-            if (txtResultado) txtResultado.textContent = areaSuma.toFixed(4) + ' u²';
+            if (txtResultado) {
+                if (diverge) {
+                    txtResultado.innerHTML = `<span style="font-size:18px;">∞ Infinito</span>`;
+                } else {
+                    txtResultado.textContent = areaSuma.toFixed(4) + ' u²';
+                }
+            }
 
             // Curva continua
             const xCurva = [], yCurva = [];
@@ -255,11 +303,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 y: yCurva,
                 mode: 'lines',
                 line: { color: '#1f2937', width: 3 },
-                name: nombresFunciones[claveFuncion] || 'Función',
+                name: nombreCurva,
                 showlegend: true
             };
 
             const isMobile = window.innerWidth <= 600;
+            
             const layout = {
                 title: {
                     text: isMobile ? '<b>Sumas de Riemann</b>' : '<b>Área bajo la curva - Sumas de Riemann</b>',
@@ -321,6 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inB) inB.addEventListener('input', actualizarGrafica);
     if (inN) inN.addEventListener('input', actualizarGrafica);
     if (selMetodo) selMetodo.addEventListener('change', actualizarGrafica);
+    
+    const formulaInput = document.getElementById('formulaInput');
+    if (formulaInput) {
+        formulaInput.addEventListener('input', actualizarGrafica);
+    }
 
     // Inicialización diferida
     setTimeout(() => {
